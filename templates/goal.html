@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('get_all_goals') }}">Goals</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('add_goal') }}">Add Goal</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-2 my-4 noto-serif-font" style="background-color: #E2DAD6;">
+    <!--    <img class="d-block mx-auto mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">-->
+    <div class="row">
+        <div class="col-4 d-sm-flex justify-content-sm-center">
+            <div class="my-2 mx-3 mr-4 custom-date-goal border rounded-4 text-center montserrat-calendar">
+                <p class="p-date py-1" style="font-size: 10px;">{{ goal_date[0]["month"] }}</p>
+                <h1 class="p-date py-1" style="font-size: 20px;">{{ goal_date[0]["day"] }}</h1>
+                <p class="p-date py-1" style="font-size: 10px;">{{ goal_date[0]["year"] }}</p>
+            </div>
+        </div>
+        <div class="col-4 px-3 d-sm-flex justify-content-sm-center">
+            <div class="row">
+                <div class="col-12 d-sm-flex justify-content-sm-center">
+                    <h3 class="fw-bold">{{ goal.goal }}</h3>
+                </div>
+                <div class="col-12 d-sm-flex justify-content-sm-center">
+                    <p class="lead mb-2">{{ goal.description }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row">
+                <div class="col-12 d-sm-flex justify-content-sm-center my-2">
+                    <a href="{{ url_for('edit_goal', goal_id=goal.id) }}" class="btn custom-button btn-sm rounded-2" role="button">Edit Goal</a>
+                </div>
+                <div class="col-12 d-sm-flex justify-content-sm-center my-2">
+                    <a href="{{ url_for('add_task', goal_id=goal.id) }}" class="btn custom-button btn-sm rounded-2"
+                       role="button">Add Task</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-2 px-0">
+    <h5 class="task-signifier">Active Tasks</h5>
+</div>
+{% for task in goal.goal_tasks %}
+{% if task.status != "Completed" %}
+<div class="container py-2 mb-4 noto-serif-font border border-2 rounded-2 task-border goal-background">
+    <div class="row">
+        <div class="col-5 my-2 px-3">
+            <h4>{{ task.task }}</h4>
+        </div>
+        <div class="col-5 my-2 pt-1 px-4">
+            <span>
+                {% if task.status == "Not Started" %}
+                <button type="button"
+                        class="btn btn-secondary btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+                {% elif task.status == "In Progress" %}
+                <button type="button"
+                        class="btn btn-primary btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+                {% elif task.status == "On Hold" %}
+                <button type="button"
+                        class="btn btn-warning btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+                {% endif %}
+            </span>
+        </div>
+        <div class="col-2 my-2 clearfix">
+            <a href="{{ url_for('edit_task', goal_id=goal.id, task_id=task.id) }}" class="float-end"><img
+                    src="{{ url_for('static', filename='images/edit.png') }}"></a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5 px-0">
+            <div class="my-2 mx-3 mr-4 custom-date rounded-4 text-center montserrat-calendar">
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["month"] }}</p>
+                <h1 class="p-date py-1" style="font-size: 20px;">{{ task_dates[task.id - 1]["day"] }}</h1>
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["year"] }}</p>
+            </div>
+        </div>
+        <div class="col-7 px-4">
+            <p>{{ task.description }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<div class="container py-2 px-0">
+    <h5 class="task-signifier">Completed Tasks</h5>
+</div>
+{% for task in goal.goal_tasks %}
+{% if task.status == "Completed" %}
+<div class="container py-2 mb-4 noto-serif-font border border-2 rounded-2 task-border goal-background">
+    <div class="row">
+        <div class="col-5 my-2 px-3">
+            <h4>{{ task.task }}</h4>
+        </div>
+        <div class="col-5 my-2 pt-1">
+    <span>
+        {% if task.status == "Completed" %}
+        <button type="button"
+                class="btn btn-success btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+        {% endif %}
+    </span>
+        </div>
+        <div class="col-2 my-2 clearfix">
+            <a href="{{ url_for('edit_task', goal_id=goal.id, task_id=task.id) }}" class="float-end"><img
+                    src="{{ url_for('static', filename='images/edit.png') }}"></a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5 px-0">
+            <div class="my-2 mx-3 mr-4 custom-date rounded-4 text-center montserrat-calendar">
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["month"] }}</p>
+                <h1 class="p-date py-1" style="font-size: 20px;">{{ task_dates[task.id - 1]["day"] }}</h1>
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["year"] }}</p>
+            </div>
+        </div>
+        <div class="col-7">
+            <p>{{ task.description }}</p>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+{% endfor %}
+{% endblock %}

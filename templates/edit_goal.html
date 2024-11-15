@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('get_all_goals') }}">Goals</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('add_goal') }}">Add Goal</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<form id="goalForm" method="POST" action="{{ url_for('get_goal', goal_id=goal.id) }}">
+    <div class="container-fluid py-2 my-4 noto-serif-font" style="background-color: #E2DAD6;">
+        <!--    <img class="d-block mx-auto mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">-->
+        <div class="row">
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-12 d-sm-flex justify-content-sm-center montserrat-calendar">
+                        <input id="date_completion" name="date_completion" class="form-control" type="date"
+                               style="width: 150px;"/>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-12 d-sm-flex justify-content-sm-center">
+                        <input type="hidden" id="goalid" name="goal_id" value="{{ goal.id }}">
+                        <input class="form-control form-control-lg" type="text" name="goal_input"
+                               placeholder="{{ goal.goal }}"
+                               aria-label=".form-control-lg">
+                    </div>
+                    <div class="col-12 pt-2">
+                        <form>
+                            <div class="form-group">
+                                <textarea class="form-control" id="goaldescription" name="goal_description"
+                                          placeholder="{{ goal.description }}" rows="3"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                    <div class="col-12 d-sm-flex justify-content-sm-center my-2">
+                        <a href="#" onclick="submitForm()" class="float-end"><img
+                        src="{{ url_for('static', filename='images/checkmark.png') }}"
+                        style="height: 32px;"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="container py-2 px-0">
+    <h5 class="task-signifier">Active Tasks</h5>
+</div>
+{% for task in goal.goal_tasks %}
+{% if task.status != "Completed" %}
+<div class="container py-2 mb-4 noto-serif-font border border-2 rounded-2 task-border goal-background">
+    <div class="row">
+        <div class="col-5 my-2 px-3">
+            <h4>{{ task.task }}</h4>
+        </div>
+        <div class="col-5 my-2 pt-1">
+        <span>
+            {% if task.status == "Not Started" %}
+            <button type="button"
+                    class="btn btn-secondary btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+            {% elif task.status == "In Progress" %}
+            <button type="button"
+                    class="btn btn-primary btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+            {% elif task.status == "On Hold" %}
+            <button type="button"
+                    class="btn btn-warning btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+            {% endif %}
+        </span>
+        </div>
+        <div class="col-2 my-2 clearfix">
+            <a href="{{ url_for('edit_task', goal_id=goal.id, task_id=task.id) }}" class="float-end"><img
+                    src="{{ url_for('static', filename='images/edit.png') }}"></a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5 px-0">
+            <div class="my-2 mx-3 mr-4 custom-date rounded-4 text-center montserrat-calendar">
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["month"] }}</p>
+                <h1 class="p-date py-1" style="font-size: 20px;">{{ task_dates[task.id - 1]["day"] }}</h1>
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["year"] }}</p>
+            </div>
+        </div>
+        <div class="col-7">
+            <p>{{ task.description }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<div class="container py-2 px-0">
+    <h5 class="task-signifier">Completed Tasks</h5>
+</div>
+{% for task in goal.goal_tasks %}
+{% if task.status == "Completed" %}
+<div class="container py-2 mb-4 noto-serif-font border border-2 rounded-2 task-border goal-background">
+    <div class="row">
+        <div class="col-5 my-2 px-3">
+            <h4>{{ task.task }}</h4>
+        </div>
+        <div class="col-5 my-2 pt-1">
+<span>
+    {% if task.status == "Completed" %}
+    <button type="button"
+            class="btn btn-success btn-sm px-4 gap-3 custom-button-width">{{ task.status }}</button>
+    {% endif %}
+</span>
+        </div>
+        <div class="col-2 my-2 clearfix">
+            <a href="{{ url_for('edit_task', goal_id=goal.id, task_id=task.id) }}" class="float-end"><img
+                    src="{{ url_for('static', filename='images/edit.png') }}"></a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-5 px-0">
+            <div class="my-2 mx-3 mr-4 custom-date rounded-4 text-center montserrat-calendar">
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["month"] }}</p>
+                <h1 class="p-date py-1" style="font-size: 20px;">{{ task_dates[task.id - 1]["day"] }}</h1>
+                <p class="p-date py-1" style="font-size: 10px;">{{ task_dates[task.id - 1]["year"] }}</p>
+            </div>
+        </div>
+        <div class="col-7">
+            <p>{{ task.description }}</p>
+        </div>
+    </div>
+</div>
+<script>
+    function submitForm() {
+        document.getElementById("goalForm").submit();
+    }
+</script>
+
+{% endif %}
+{% endfor %}
+{% endblock %}

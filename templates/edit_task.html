@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block nav %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('get_all_goals') }}">Goals</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('add_goal') }}">Add Goal</a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-2 my-4 noto-serif-font" style="background-color: #E2DAD6;">
+    <!--    <img class="d-block mx-auto mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">-->
+    <div class="row">
+        <div class="col-12 px-3 d-sm-flex justify-content-sm-center">
+            <h3 class="fw-bold">{{ goal.goal }}</h3>
+        </div>
+        <div class="col-12 d-sm-flex justify-content-sm-center">
+            <p class="lead mb-2">{{ goal.description }}</p>
+        </div>
+    </div>
+</div>
+
+{% for task in goal.goal_tasks %}
+{% if task.id == task_edit.id %}
+<form id="taskForm" method="POST" action="{{ url_for('get_goal', goal_id=goal.id) }}">
+    <div class="container py-2 mb-4 noto-serif-font border border-3 rounded-4 task-border goal-background">
+        <div class="row">
+            <div class="col-5 my-2 px-3">
+                <input type="hidden" id="taskid" name="task_id" value="{{ task.id }}">
+                <input class="form-control form-control-lg" type="text" name="task_input" placeholder="{{ task.task }}"
+                       aria-label=".form-control-lg">
+            </div>
+            <div class="col-5 my-2 pt-1">
+                <select class="form-select" name="status_select" aria-label="Default select example"
+                        style="width: 150px;">
+                    <option selected>Status</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="On Hold">On Hold</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+            <div class="col-2 my-2 clearfix">
+                <a href="#" onclick="submitForm()" class="float-end"><img
+                        src="{{ url_for('static', filename='images/checkmark.png') }}"
+                        style="height: 32px;"></a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5 px-0">
+                <div class="my-2 mx-3 mr-4 montserrat-calendar">
+                    <input id="date_completion" name="date_completion" class="form-control" type="date"
+                           style="width: 150px;"/>
+                </div>
+            </div>
+            <div class="col-7 px-3" style="padding-left: 5px;">
+                <form>
+                    <div class="form-group">
+                        <textarea class="form-control" id="taskdescription" name="task_description"
+                                  placeholder="{{ task.description }}"
+                                  rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    function submitForm() {
+        document.getElementById("taskForm").submit();
+    }
+</script>
+{% endif %}
+{% endfor %}
+{% endblock %}
+
